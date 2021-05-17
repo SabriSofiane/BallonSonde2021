@@ -25,6 +25,7 @@ public:
    static void tacheGPS(void* parameter);
    static void tacheAffichage(void* parameter);
    static void tacheSigfox(void* parameter);
+   static void tacheCarteSD(void* parameter);
 private:
    
   

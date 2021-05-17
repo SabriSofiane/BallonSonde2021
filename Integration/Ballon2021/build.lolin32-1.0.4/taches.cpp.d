@@ -134,5 +134,10 @@ build.lolin32-1.0.4/taches.cpp.o: taches.cpp \
  /opt/Esp8266-Arduino-Makefile/libraries/BME280/src/BME280.h \
  /opt/Esp8266-Arduino-Makefile/libraries/PocketGeiger/src/RadiationWatch.h \
  /opt/Esp8266-Arduino-Makefile/libraries/TinyGPS/src/TinyGPS.h \
+ /opt/Esp8266-Arduino-Makefile/esp32-1.0.4/libraries/SPI/src/SPI.h \
+ /opt/Esp8266-Arduino-Makefile/esp32-1.0.4/cores/esp32/esp32-hal-spi.h \
+ /opt/Esp8266-Arduino-Makefile/esp32-1.0.4/libraries/FS/src/FS.h \
+ /opt/Esp8266-Arduino-Makefile/esp32-1.0.4/libraries/SD/src/SD.h \
+ /opt/Esp8266-Arduino-Makefile/esp32-1.0.4/libraries/SD/src/sd_defines.h \
  /opt/Esp8266-Arduino-Makefile/esp32-1.0.4/cores/esp32/HardwareSerial.h \
  sigfox.h

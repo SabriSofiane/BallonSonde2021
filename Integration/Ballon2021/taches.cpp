@@ -7,15 +7,24 @@
 #include <BME280I2C.h>
 #include <RadiationWatch.h>
 #include <TinyGPS.h>
+#include <SPI.h>
+#include <FS.h>
+#include <SD.h>
+#include <string>
 #include <HardwareSerial.h>
 #include "structures.h"
 #include "sigfox.h"
+#define SCK_PIN 14 //numéro de broche sck de l'esp32
+#define MISO_PIN 2 //numéro de broche MISO de l'esp32
+#define MOSI_PIN 15 //numéro de broche MOSI de l'esp32
+#define CS_PIN 13 //numéro de broche CS de l'esp32
+
 SemaphoreHandle_t mutex;
 RadiationWatch radiationWatch(32, 33);
 TinyGPS gps;
 HardwareSerial serialGps(2); // sur hardware serial 2
 Sigfox BallonSig(27, 26, true);
-//File fichierCSV;
+File fichierCSV;
 const char *ssid = "BallonSondeAP";
 const char *password = "totototo";
  
@@ -165,7 +174,7 @@ void Taches::tacheGPS(void* parameter) {
 }
 
 /**
- * tacheGPS Reception des données du capteur de radiations et enregistrement dans la structure partagée
+ * @brief Taches::tacheRadiations Reception des données du capteur de radiations et enregistrement dans la structure partagée
  * @param parameter
  */
 void Taches::tacheRadiations(void* parameter) {
@@ -253,6 +262,10 @@ void Taches::tacheAffichage(void* parameter) {
 
 }
 
+/**
+ * @brief Taches::tacheSigfox envoi d'un message sigfox avec les données de la structure partagée
+ * @param parameter
+ */
 void Taches::tacheSigfox(void* parameter)
 {
     
@@ -276,3 +289,85 @@ void Taches::tacheSigfox(void* parameter)
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(600000)); // toutes les 600000 ms = 10 minutes
     }
 }
+
+void Taches::tacheCarteSD(void* parameter)
+{
+    TickType_t xLastWakeTime;
+    xLastWakeTime = xTaskGetTickCount();
+    typeDonnees *dataSD=(typeDonnees *)parameter;
+    //initialisation systeme de fichier
+    SPI.begin(SCK_PIN, MISO_PIN, MOSI_PIN, CS_PIN);
+    delay(10);
+
+    //initialisation CarteSD
+    if (!SD.begin(CS_PIN, SPI, 4000000, "/sd")) {
+        Serial.println("Erreur montage Carte SD");
+        return;
+    }
+
+    for (;;) // <- boucle infinie
+    {
+        // Verrouillage du mutex
+        xSemaphoreTake(mutex, portMAX_DELAY);
+
+        //Conversion + construction de la ligne de données à enregistrer dans la carte SD
+        //conversion de la date
+        String sDonnees = String(dataSD->date.annee) + "-";
+        //si numéro du mois inférieur à 10 alors, ajout d'un 0 devant sinon, on ne fais rien 
+        sDonnees += (dataSD->date.mois < 10 ? "0" + String(dataSD->date.mois) : String(dataSD->date.mois)) + "-";
+        if (dataSD->date.jour < 10) {
+            sDonnees += "0" + String(dataSD->date.jour) + " ";
+        } else {
+            sDonnees += String(dataSD->date.jour) + " ";
+        }
+
+
+        //conversion de l'heure
+        if (dataSD->heures.heure < 10) {
+            sDonnees += "0" + String(dataSD->heures.heure) + ":";
+        } else {
+            sDonnees += String(dataSD->heures.heure) + ":";
+        }
+        if (dataSD->heures.minute < 10) {
+            sDonnees += "0" + String(dataSD->heures.minute) + ":";
+        } else {
+            sDonnees += String(dataSD->heures.minute) + ":";
+        }
+        if (dataSD->heures.seconde < 10) {
+            sDonnees += "0" + String(dataSD->heures.seconde) + ";";
+        } else {
+            sDonnees += String(dataSD->heures.seconde) + ";";
+        }
+
+        //conversion de la position
+        sDonnees += String(dataSD->position.latitude,{6}) + ";";
+        sDonnees += String(dataSD->position.longitude,{6}) + ";";
+        sDonnees += String(dataSD->position.altitude,{0}) + ";";
+
+        //conversion des données des capteurs
+        sDonnees += String(dataSD->DonneesCapteurs.temperature) + ";";
+        sDonnees += String(dataSD->DonneesCapteurs.pression) + ";";
+        sDonnees += String(dataSD->DonneesCapteurs.cpm) + ";";
+        sDonnees += String(dataSD->DonneesCapteurs.humidite) + ";";
+
+        fichierCSV = SD.open("/TestCSV.csv", FILE_APPEND); //ouverture du fichier en modification
+        if (!fichierCSV) {
+            Serial.print("Echec ouverture du fichier\n");
+        }
+        if (fichierCSV.println(sDonnees)) //écriture de la ligne de données dans la carte SD
+        {
+            Serial.print("Donnee enregistrée\n");
+        } else {
+            Serial.print("pb enregistrement donnee\n");
+        }
+        fichierCSV.close();
+
+        // Déverrouillage du mutex
+        xSemaphoreGive(mutex);
+
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(60000)); // toutes les 60000 ms = 1 minute
+    
+}
+    
+}
+    
