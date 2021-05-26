@@ -1,5 +1,12 @@
+/**
+ * @file taches.cpp
+ * @brief Implémentation de la classe Taches
+ * @version 1.0
+ * @author Sofiane SABRI
+ * @date 20/05/2021
+ * @details Classe qui regroupe l'ensemble des taches utilisées 
+ */
 
-#include <freertos/semphr.h>
 #include "structures.h"
 #include "taches.h"
 #include <Arduino.h>
@@ -22,18 +29,26 @@
 SemaphoreHandle_t mutex;
 RadiationWatch radiationWatch(32, 33);
 TinyGPS gps;
-HardwareSerial serialGps(2); // sur hardware serial 2
+HardwareSerial serialGps(SERIALGPS); // sur hardware serial 1
 Sigfox BallonSig(27, 26, true);
 File fichierCSV;
 const char *ssid = "BallonSondeAP";
 const char *password = "totototo";
- 
+int compteurGPS = 0;
+
+/**
+ * @brief Taches::Taches() constructeur de la classe Taches
+ */
 
 Taches::Taches() {
 
-   mutex = xSemaphoreCreateMutex();
+    mutex = xSemaphoreCreateMutex();
 
 }
+
+/**
+ * @brief onRadiation() fonction de la classe RadiationWatch.h pour la récupération de données
+ */
 
 void onRadiation() {
 
@@ -42,6 +57,7 @@ void onRadiation() {
     radiationWatch.cpm();
 
 }
+
 /**
  * @brief Taches::tacheBME280 Reception des données du capteur BME280 et enregistrement dans la structure partagée
  * @param parameter
@@ -56,7 +72,7 @@ void Taches::tacheBME280(void* parameter) {
             BME280::SpiEnable_False,
             BME280I2C::I2CAddr_0x77 // 0x77 I2C address pour BME 280 Adafruit.
             );
-    typeDonnees *capteurBme=(typeDonnees *)parameter;
+    typeDonnees *capteurBme = (typeDonnees *) parameter;
     BME280I2C bme(settings);
     TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
@@ -86,7 +102,7 @@ void Taches::tacheBME280(void* parameter) {
         float temp(NAN), hum(NAN), pres(NAN);
         BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
         BME280::PresUnit presUnit(BME280::PresUnit_hPa);
-        
+
         bme.read(pres, temp, hum, tempUnit, presUnit);
         //ouverture du mutex
         xSemaphoreTake(mutex, portMAX_DELAY);
@@ -108,14 +124,26 @@ void Taches::tacheBME280(void* parameter) {
 void Taches::tacheGPS(void* parameter) {
     TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
-    typeDonnees *capteurGps=(typeDonnees *)parameter;
+    typeDonnees *capteurGps = (typeDonnees *) parameter;
     serialGps.begin(4800, SERIAL_8N1, 16, 17);
     Serial.print("Simple TinyGPS library v. ");
     Serial.println(TinyGPS::library_version());
+    float lat, lon, alt;
+    unsigned long date, time;
+    unsigned long age;
+    //HEURE
+    byte seconde;
+    byte minute;
+    byte heure;
+    //DATE
+    byte jour;
+    byte mois;
+    byte hundredths;
+    int annee;
+    bool newData = false;
+    unsigned long chars;
+    unsigned short sentences, failed;
     for (;;) {
-        bool newData = false;
-        unsigned long chars;
-        unsigned short sentences, failed;
 
         // Pendant une seconde lecture des caractères envoyés par le GPS
         for (unsigned long start = millis(); millis() - start < 1000;) {
@@ -126,21 +154,8 @@ void Taches::tacheGPS(void* parameter) {
                     newData = true;
             }
         }
-
         if (newData) {
-            float lat, lon, alt;
-            unsigned long date, time;
-            unsigned long age;
-            //HEURE
-            byte seconde;
-            byte minute;
-            byte heure;
 
-            //DATE
-            byte jour;
-            byte mois;
-            byte hundredths;
-            int annee;
             gps.f_get_position(&lat, &lon, &age);
             gps.get_datetime(&date, &time, &age);
             gps.crack_datetime(&annee, &mois, &jour, &heure, &minute, &seconde, &hundredths, &age);
@@ -157,19 +172,16 @@ void Taches::tacheGPS(void* parameter) {
             capteurGps->heures.heure = heure;
             capteurGps->heures.minute = minute;
             capteurGps->heures.seconde = seconde;
+
             //fermeture du mutex
             xSemaphoreGive(mutex);
         }
 
-        gps.stats(&chars, &sentences, &failed);
-
-        if (chars == 0)
-            Serial.println("** No characters received from GPS: check wiring **");
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(60000)); // reveille toutes les 60s
 
+
+
     }
-
-
 
 }
 
@@ -180,9 +192,9 @@ void Taches::tacheGPS(void* parameter) {
 void Taches::tacheRadiations(void* parameter) {
     TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
-    typeDonnees *capteurRadiation=(typeDonnees *)parameter;
+    typeDonnees *capteurRadiation = (typeDonnees *) parameter;
     radiationWatch.setup();
-    
+
     //Register the callbacks.
     radiationWatch.registerRadiationCallback(&onRadiation);
 
@@ -193,7 +205,9 @@ void Taches::tacheRadiations(void* parameter) {
         xSemaphoreTake(mutex, portMAX_DELAY);
         capteurRadiation->DonneesCapteurs.cpm = radiationWatch.cpm();
         //fermeture du mutex
+
         xSemaphoreGive(mutex);
+
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(60000)); // reveille toutes les 60s
 
     }
@@ -208,7 +222,7 @@ void Taches::tacheAffichage(void* parameter) {
     TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
     //delay(5000);
-    typeDonnees *data=(typeDonnees *)parameter;
+    typeDonnees *data = (typeDonnees *) parameter;
 
     for (;;) {
         //ouverture du mutex
@@ -266,13 +280,12 @@ void Taches::tacheAffichage(void* parameter) {
  * @brief Taches::tacheSigfox envoi d'un message sigfox avec les données de la structure partagée
  * @param parameter
  */
-void Taches::tacheSigfox(void* parameter)
-{
-    
-    
+void Taches::tacheSigfox(void* parameter) {
+
+
     TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
-    typeDonnees *dataSigfox=(typeDonnees *)parameter;
+    typeDonnees *dataSigfox = (typeDonnees *) parameter;
     BallonSig.begin();
 
     for (;;) // <- boucle infinie
@@ -281,20 +294,26 @@ void Taches::tacheSigfox(void* parameter)
         xSemaphoreTake(mutex, portMAX_DELAY);
 
         BallonSig.coderTrame(dataSigfox);
-        BallonSig.envoyer(BallonSig.trame, sizeof (BallonSig.trame));
-
         // Déverrouillage du mutex
         xSemaphoreGive(mutex);
+        BallonSig.envoyer(BallonSig.trame, sizeof (BallonSig.trame));
+
+
+
 
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(600000)); // toutes les 600000 ms = 10 minutes
     }
 }
 
-void Taches::tacheCarteSD(void* parameter)
-{
+/**
+ * @brief Taches::tacheCarteSD 
+ * @param parameter
+ */
+
+void Taches::tacheCarteSD(void* parameter) {
     TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
-    typeDonnees *dataSD=(typeDonnees *)parameter;
+    typeDonnees *dataSD = (typeDonnees *) parameter;
     //initialisation systeme de fichier
     SPI.begin(SCK_PIN, MISO_PIN, MOSI_PIN, CS_PIN);
     delay(10);
@@ -340,15 +359,22 @@ void Taches::tacheCarteSD(void* parameter)
         }
 
         //conversion de la position
-        sDonnees += String(dataSD->position.latitude,{6}) + ";";
-        sDonnees += String(dataSD->position.longitude,{6}) + ";";
-        sDonnees += String(dataSD->position.altitude,{0}) + ";";
+        sDonnees += String(dataSD->position.latitude, {
+            6
+        }) + ";";
+        sDonnees += String(dataSD->position.longitude, {
+            6
+        }) + ";";
+        sDonnees += String(dataSD->position.altitude, {
+            0
+        }) + ";";
 
         //conversion des données des capteurs
         sDonnees += String(dataSD->DonneesCapteurs.temperature) + ";";
         sDonnees += String(dataSD->DonneesCapteurs.pression) + ";";
         sDonnees += String(dataSD->DonneesCapteurs.cpm) + ";";
         sDonnees += String(dataSD->DonneesCapteurs.humidite) + ";";
+        //sDonnees += String(compteurGPS) + ";";
 
         fichierCSV = SD.open("/TestCSV.csv", FILE_APPEND); //ouverture du fichier en modification
         if (!fichierCSV) {
@@ -366,8 +392,7 @@ void Taches::tacheCarteSD(void* parameter)
         xSemaphoreGive(mutex);
 
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(60000)); // toutes les 60000 ms = 1 minute
-    
+
+    }
+
 }
-    
-}
-    

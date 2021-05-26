@@ -1,11 +1,12 @@
 #include "sigfox.h"
 #include "structures.h"
 #include "HardwareSerial.h"
+
 //Message buffer
 uint8_t msg[12];
 
 Sigfox::Sigfox (uint8_t rxPin=26 , uint8_t txPin=27, bool debugEn=true) {
-	serialSig = new HardwareSerial(2);
+	serialSig = new HardwareSerial(SERIALSIGFOX); //Sur hardware serial 2
   rx = rxPin;
   tx = txPin;
   debug = debugEn;

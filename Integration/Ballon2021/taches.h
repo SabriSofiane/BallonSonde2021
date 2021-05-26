@@ -1,20 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * @file taches.h
+ * @brief Déclaration de la classe Taches
+ * @version 1.0
+ * @author Sofiane SABRI
+ * @date 20/05/2021
  */
-
-/* 
- * File:   taches.h
- * Author: ssabri
- *
- * Created on 6 mai 2021, 12:23
- */
-
 #ifndef TACHES_H
 #define TACHES_H
 #define SERIAL_BAUD 115200
 #define LED 22
+#define SERIALGPS 1
+
 #include "structures.h"
 class Taches {
 public:

@@ -8,7 +8,7 @@
 
 #ifndef __SIGFOX__
 #define __SIGFOX__
-
+#define SERIALSIGFOX 2
 #include "structures.h"
 
 
