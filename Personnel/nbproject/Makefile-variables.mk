@@ -9,19 +9,19 @@ CND_DISTDIR=dist
 # Debug configuration
 CND_PLATFORM_Debug=esp32-Linux
 CND_ARTIFACT_DIR_Debug=dist/Debug/esp32-Linux
-CND_ARTIFACT_NAME_Debug=ballonsonde2021
-CND_ARTIFACT_PATH_Debug=dist/Debug/esp32-Linux/ballonsonde2021
+CND_ARTIFACT_NAME_Debug=ballonsonde
+CND_ARTIFACT_PATH_Debug=dist/Debug/esp32-Linux/ballonsonde
 CND_PACKAGE_DIR_Debug=dist/Debug/esp32-Linux/package
-CND_PACKAGE_NAME_Debug=ballonsonde2021.tar
-CND_PACKAGE_PATH_Debug=dist/Debug/esp32-Linux/package/ballonsonde2021.tar
+CND_PACKAGE_NAME_Debug=ballonsonde.tar
+CND_PACKAGE_PATH_Debug=dist/Debug/esp32-Linux/package/ballonsonde.tar
 # Release configuration
 CND_PLATFORM_Release=esp32-Linux
 CND_ARTIFACT_DIR_Release=dist/Release/esp32-Linux
-CND_ARTIFACT_NAME_Release=ballonsonde2021
-CND_ARTIFACT_PATH_Release=dist/Release/esp32-Linux/ballonsonde2021
+CND_ARTIFACT_NAME_Release=ballonsonde
+CND_ARTIFACT_PATH_Release=dist/Release/esp32-Linux/ballonsonde
 CND_PACKAGE_DIR_Release=dist/Release/esp32-Linux/package
-CND_PACKAGE_NAME_Release=ballonsonde2021.tar
-CND_PACKAGE_PATH_Release=dist/Release/esp32-Linux/package/ballonsonde2021.tar
+CND_PACKAGE_NAME_Release=ballonsonde.tar
+CND_PACKAGE_PATH_Release=dist/Release/esp32-Linux/package/ballonsonde.tar
 #
 # include compiler specific variables
 #

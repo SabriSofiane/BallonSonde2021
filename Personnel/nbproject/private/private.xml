@@ -7,8 +7,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/USERS/ELEVES/SNIR2019/ssabri/esp32/BallonSonde2021/main.ino.cpp</file>
-            <file>file:/home/USERS/ELEVES/SNIR2019/ssabri/esp32/BallonSonde2021/Makefile</file>
+            <file>file:/home/USERS/ELEVES/SNIR2019/ssabri/esp32/BallonSonde/taches.cpp</file>
+            <file>file:/home/USERS/ELEVES/SNIR2019/ssabri/esp32/BallonSonde/main.ino.cpp</file>
+            <file>file:/home/USERS/ELEVES/SNIR2019/ssabri/esp32/BallonSonde/structures.h</file>
+            <file>file:/home/USERS/ELEVES/SNIR2019/ssabri/esp32/BallonSonde/taches.h</file>
+            <file>file:/home/USERS/ELEVES/SNIR2019/ssabri/esp32/BallonSonde/Makefile</file>
         </group>
     </open-files>
 </project-private>

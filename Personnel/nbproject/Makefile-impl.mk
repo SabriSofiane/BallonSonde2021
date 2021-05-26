@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=BallonSonde2021
+PROJECTNAME=BallonSonde
 
 # Active Configuration
 DEFAULTCONF=Debug
