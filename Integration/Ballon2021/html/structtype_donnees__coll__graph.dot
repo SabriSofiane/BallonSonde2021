@@ -1,0 +1,14 @@
+digraph "typeDonnees"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{typeDonnees\n||}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +position" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{typePosition\n|+ altitude\l+ latitude\l+ longitude\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structtype_position.html"];
+  Node3 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +date" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{typeDate\n|+ jour\l+ mois\l+ annee\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structtype_date.html"];
+  Node4 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +DonneesCapteurs" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node4 [label="{typeDonneesCapteurs\n|+ temperature\l+ humidite\l+ pression\l+ cpm\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structtype_donnees_capteurs.html"];
+  Node5 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +heures" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node5 [label="{typeHeure\n|+ seconde\l+ minute\l+ heure\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structtype_heure.html"];
+}

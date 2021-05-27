@@ -7,18 +7,7 @@
  * @details Classe qui regroupe l'ensemble des taches utilisées 
  */
 
-#include "structures.h"
 #include "taches.h"
-#include <Arduino.h>
-#include <Wire.h>
-#include <BME280I2C.h>
-#include <RadiationWatch.h>
-#include <TinyGPS.h>
-#include <SPI.h>
-#include <FS.h>
-#include <SD.h>
-#include <string>
-#include <HardwareSerial.h>
 #include "structures.h"
 #include "sigfox.h"
 #define SCK_PIN 14 //numéro de broche sck de l'esp32

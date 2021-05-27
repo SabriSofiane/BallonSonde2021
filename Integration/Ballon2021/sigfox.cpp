@@ -1,3 +1,11 @@
+/**
+ * @file sigfox.cpp
+ * @brief Implémentation de la classe sigfox
+ * @version 1.0
+ * @author Antoine PACOT
+ * @date 27/05/2021
+ * @details Classe qui regroupe l'ensemble des méthodes utilisées pour l'envoi de message sigfox
+ */
 #include "sigfox.h"
 #include "structures.h"
 #include "HardwareSerial.h"
@@ -5,6 +13,12 @@
 //Message buffer
 uint8_t msg[12];
 
+/**
+ * @brief Constructeur de la classe sigfox
+ * @param rxPin
+ * @param txPin
+ * @param debugEn
+ */
 Sigfox::Sigfox (uint8_t rxPin=26 , uint8_t txPin=27, bool debugEn=true) {
 	serialSig = new HardwareSerial(SERIALSIGFOX); //Sur hardware serial 2
   rx = rxPin;
@@ -12,7 +26,11 @@ Sigfox::Sigfox (uint8_t rxPin=26 , uint8_t txPin=27, bool debugEn=true) {
   debug = debugEn;
 }
 
-// Lecture des datas reçu sur la liaison série HardwareSerial 
+
+/**
+ * @brief Sigfox::obtenirData() Lecture des données reçu sur la liaison série HardwareSerial 
+ * @return les données
+ */
 String Sigfox::obtenirData(void){
   String data = "";
   char output;
@@ -31,7 +49,10 @@ String Sigfox::obtenirData(void){
   return data;  
 }
 
-// Initialise la liaison avec le composant Sigfox
+
+/**
+ * @brief Sigfox::begin() Initialise la liaison avec le composant Sigfox
+ */
 void Sigfox::begin(){
 
 	serialSig->begin(9600, SERIAL_8N1, rx, tx);
@@ -47,7 +68,11 @@ void Sigfox::begin(){
 	}
 }
 
-//Méthode pour obtenir l'identifiant Sigfox
+
+/**
+ * @brief Sigfox::obtenirID() Méthode pour obtenir l'identifiant Sigfox
+ * @return 
+ */
 String Sigfox::obtenirID(){
 	serialSig->print("AT$I=10\r");
 	String id = obtenirData();
@@ -61,7 +86,11 @@ String Sigfox::obtenirID(){
 }
 
 
-//Méthode pour obtenir le PAC number
+
+/**
+ * @brief Sigfox::obtenirPAC() Méthode pour obtenir le PAC number
+ * @return le PAC
+ */
 String Sigfox::obtenirPAC(){
 	serialSig->print("AT$I=11\r");
 	String pac = obtenirData();
@@ -74,7 +103,11 @@ String Sigfox::obtenirPAC(){
 	return pac;
 }
 
-//Méthode pour obtenir la température du module
+
+/**
+ * @brief Sigfox::obtenirTemp() Méthode pour obtenir la température du module
+ * @return la temperature
+ */
 uint16_t Sigfox::obtenirTemp(void){
 	serialSig->print("AT$T?\r");
 	uint16_t tempVal = obtenirData().toInt();
@@ -87,10 +120,11 @@ uint16_t Sigfox::obtenirTemp(void){
 	return tempVal;
 }
 
-/** Méthode pour tester le composant 
- *  la commande AT renvoie OK
- */
 
+/**
+ * @brief Sigfox::tester() Méthode pour tester le composant, la commande AT renvoie OK
+ * @return le statut du module
+ */
  String Sigfox::tester(){
   serialSig->print("AT\r");
   String status = obtenirData();
@@ -103,12 +137,13 @@ uint16_t Sigfox::obtenirTemp(void){
   return status;
 }
 
-/**
- * Méthode pour envoyer des data
- * data un tableau de 12 octets au maximum
- * size le nombre d'octet à envoyer
- * retourne vrai si le message a été envoyé avec success
- */
+
+ /**
+  * @brief Méthode pour envoyer des data, data un tableau de 12 octets au maximum size le nombre d'octet à envoyer
+  * @param data
+  * @param size
+  * @return retourne vrai si le message a été envoyé avec success
+  */
 bool Sigfox::envoyer(const void* data, uint8_t size){   
   String status = "";
   char output;
@@ -143,7 +178,10 @@ bool Sigfox::envoyer(const void* data, uint8_t size){
   return false;
 }
 
-
+/**
+ * @brief méthode qui récupère les données de la structure partagée et les transforme pour l'envoi
+ * @param lesDonnees
+ */
 void Sigfox::coderTrame(typeDonnees *lesDonnees)
 {
     //conversion des donnees    
