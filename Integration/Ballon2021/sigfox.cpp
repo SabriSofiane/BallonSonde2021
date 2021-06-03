@@ -7,7 +7,7 @@
  * @details Classe qui regroupe l'ensemble des méthodes utilisées pour l'envoi de message sigfox
  */
 #include "sigfox.h"
-#include "structures.h"
+//#include "structures.h"
 #include "HardwareSerial.h"
 
 //Message buffer

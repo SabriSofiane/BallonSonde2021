@@ -8,7 +8,16 @@
  */
 
 #include "taches.h"
-#include "structures.h"
+#include <Arduino.h>
+#include <Wire.h>
+#include <BME280I2C.h>
+#include <RadiationWatch.h>
+#include <TinyGPS.h>
+#include <SPI.h>
+#include <FS.h>
+#include <SD.h>
+#include <string>
+#include <HardwareSerial.h>
 #include "sigfox.h"
 #define SCK_PIN 14 //numéro de broche sck de l'esp32
 #define MISO_PIN 2 //numéro de broche MISO de l'esp32

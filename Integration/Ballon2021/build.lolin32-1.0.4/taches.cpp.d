@@ -126,7 +126,7 @@ build.lolin32-1.0.4/taches.cpp.o: taches.cpp \
  /opt/Esp8266-Arduino-Makefile/esp32-1.0.4/cores/esp32/HardwareSerial.h \
  /opt/Esp8266-Arduino-Makefile/esp32-1.0.4/cores/esp32/Esp.h \
  /opt/Esp8266-Arduino-Makefile/esp32-1.0.4/variants/lolin32/pins_arduino.h \
- structures.h taches.h \
+ taches.h structures.h \
  /opt/Esp8266-Arduino-Makefile/esp32-1.0.4/libraries/Wire/src/Wire.h \
  /opt/Esp8266-Arduino-Makefile/esp32-1.0.4/cores/esp32/esp32-hal.h \
  /opt/Esp8266-Arduino-Makefile/esp32-1.0.4/tools/sdk/include/freertos/freertos/queue.h \
